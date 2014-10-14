@@ -1,0 +1,20 @@
+local ITEM = Clockwork.item:New("consumable_base");
+ITEM.name = "Wasteland Tequila";
+ITEM.uniqueID = "tequila";
+ITEM.model = "models/props/CS_militia/bottle02.mdl";
+ITEM.value = 12;
+ITEM.type = "consumable";
+ITEM.cost = 50;
+ITEM.weight = 1.5;
+ITEM.hunger = 5;
+ITEM.thirst = 45;
+ITEM.rads = 6;
+ITEM.drunkTime = 240;
+ITEM.junk = "empty_bottle_tequila";
+ITEM.business = true;
+ITEM.access = "D";
+ITEM.useText = "Drink";
+ITEM.category = "Consumables";
+ITEM.description = "A bottle filled with tequila. It has a good smell.";
+
+ITEM:Register();
