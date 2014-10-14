@@ -16,7 +16,7 @@ function Clockwork.chatBox:WrappedText(newLine, message, color, text, OnHover)
 	local textWidth, height = Clockwork.kernel:GetTextSize(chatBoxTextFont, text);
 	-- Set width to the total width
 	local width = textWidth + message.width
-	local maximumWidth = ScrW() * Clockwork.option:GetKey("chatbox_width");
+	local maximumWidth = ScrW() * math.Clamp(Clockwork.option:GetKey("chatbox_width"), 0, 1);
 	
 	-- If width < 0 then this is the recursive call from firstText which is already the correct length.
 	-- But as we allow it to look ahead for a space character, this might be actually longer than maximum width.
