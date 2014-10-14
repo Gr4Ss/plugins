@@ -1,5 +1,7 @@
 
 local PLUGIN = PLUGIN;
+local Clockwork = Clockwork;
+local cwOption = Clockwork.option;
 
 local COMMAND = Clockwork.command:New("Approve");
 COMMAND.tip = "Approves a new player, allowing him full access to everything.";
@@ -31,10 +33,10 @@ function COMMAND:OnRun(player, arguments)
 
 				Clockwork.plugin:Call("PlayerApproved", target);
 			else
-				player:CPNotify(target:Name().." has already been approved.", Clockwork.option:GetKey("cannot_do_icon"));
+				player:CPNotify(target:Name().." has already been approved.", cwOption:GetKey("cannot_do_icon"));
 			end;
 		else
-			player:CPNotify(arguments[1].." is not a valid character!", Clockwork.option:GetKey("invalied_target_icon"));
+			player:CPNotify(arguments[1].." is not a valid character!", cwOption:GetKey("invalied_target_icon"));
 		end;
 	else
 		if (IsValid(PLUGIN.LastUnapprovedSpawn)) then

@@ -5,7 +5,8 @@ COMMAND.access = "o";
 
 -- Called when the command has been run.
 function COMMAND:OnRun(player, arguments)
-	for k, v in pairs(_player.GetAll()) do
+	local players = _player.GetAll();
+	for k, v in pairs(players) do
 		v:ConCommand("r_cleardecals");
 		v:CPNotify(player:Name().." has cleared all decals.", "bin");
 	end;

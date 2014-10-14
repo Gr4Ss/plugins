@@ -4,7 +4,6 @@ local Clockwork = Clockwork;
 local COMMAND = Clockwork.command:New("CharAttributeAdd");
 COMMAND.tip = "Adds the given amount to the player's attribute.";
 COMMAND.text = "<string Name> <string Attribute> <int Amount>";
-COMMAND.flags = CMD_DEFAULT;
 COMMAND.access = "s";
 COMMAND.arguments = 3;
 
