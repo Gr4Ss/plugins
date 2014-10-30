@@ -68,19 +68,16 @@ function PLUGIN:PlayerThink(player, curTime, infoTable)
 		local radiationScale = 0;
 		local playerPos = player:GetShootPos();
 
-		if (!self.radiationArea or !self:IsInBox(playerPos, self.radiationArea.minimum, self.radiationArea.maximum)) then
-			-- Loop over all exclusion zones which cover most players, this avoids having to do a lot of checks to find who is in a radiation zone
-			if (self.noRadiationZones) then
-				for k2, noRadZone in pairs(self.noRadiationZones) do
-					if (self:IsInBox(playerPos, noRadZone.minimum, noRadZone.maximum)) then
-						isNotInNoRadiationZone = false;
-						break;
-					end;
+		-- Loop over all exclusion zones which cover most players, this avoids having to do a lot of checks to find who is in a radiation zone
+		if (self.noRadiationZones) then
+			for k2, noRadZone in pairs(self.noRadiationZones) do
+				if (self:IsInBox(playerPos, noRadZone.minimum, noRadZone.maximum)) then
+					isNotInNoRadiationZone = false;
+					break;
 				end;
 			end;
-		else
-			isNotInNoRadiationZone = false;
 		end;
+		
 		-- Check if a player is in a radiation zone if he is not in an exclusion zone
 		-- As radiationZones is inversly sorted on scale, the highest scaled zone the player is in is the first that he is in
 		if (isNotInNoRadiationZone) then

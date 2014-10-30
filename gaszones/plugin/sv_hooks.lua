@@ -26,20 +26,17 @@ function PLUGIN:PlayerThink(player, curTime, infoTable)
 		local gasScale = 0;
 		local playerPos = player:GetShootPos();
 		local isNotInNoGasZone = true;
-		-- Check if the player is in the gasArea, if not he cannot be in a gaszone!
-		if (!self.gasArea or !self:IsInBox(playerPos, self.gasArea.minimum, self.gasArea.maximum)) then
-			-- Loop over all exclusion zones which cover most players, this avoids having to do a lot of checks to find who is in a gas zone
-			if (self.noGasZones) then
-				for k2, noGasZone in pairs(self.noGasZones) do
-					if (self:IsInBox(playerPos, noGasZone.minimum, noGasZone.maximum)) then
-						isNotInNoGasZone = false;
-						break;
-					end;
+		
+		-- Loop over all exclusion zones which cover most players, this avoids having to do a lot of checks to find who is in a gas zone
+		if (self.noGasZones) then
+			for k2, noGasZone in pairs(self.noGasZones) do
+				if (self:IsInBox(playerPos, noGasZone.minimum, noGasZone.maximum)) then
+					isNotInNoGasZone = false;
+					break;
 				end;
 			end;
-		else
-			isNotInNoGasZone = true;
 		end;
+
 		-- Check if a player is in a gas zone if he is not in an exclusion zone
 		-- As gasZones is inversly sorted on scale, the highest scaled zone the player is in is the first that he is in
 		if (isNotInNoGasZone) then

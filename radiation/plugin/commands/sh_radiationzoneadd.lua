@@ -33,20 +33,6 @@ function COMMAND:OnRun(player, arguments)
 			scale = tonumber(arguments[1])
 		};
 
-		local radiationArea = PLUGIN.radiationArea;
-		if (radiationArea) then
-			local min = radiationArea.minimum; local max = radiationArea.maximum;
-			if (!min.x or data.minimum.x < min.x) then min.x = data.minimum.x end;
-			if (!min.y or data.minimum.y < min.y) then min.y = data.minimum.y end;
-			if (!min.z or data.minimum.z < min.z) then min.z = data.minimum.z end;
-			if (!max.x or data.maximum.x > max.x) then max.x = data.maximum.x end;
-			if (!max.y or data.maximum.y > max.y) then max.y = data.maximum.y end;
-			if (!max.z or data.maximum.z > max.z) then max.z = data.maximum.z end;
-			PLUGIN.radiationArea = {minimum = min, maximum = max};
-		else
-			PLUGIN.radiationArea = {minimum = data.minimum, maximum = data.maximum};
-		end;
-		
 		PLUGIN.radiationZones[#PLUGIN.radiationZones + 1] = data;
 		PLUGIN:SaveRadiationZones();
 		

@@ -18,20 +18,6 @@ Clockwork.hint:Add("RadAway", "Got a bit too many rads? Try some RadAway today t
 function PLUGIN:LoadRadiationZones()
 	self.radiationZones = Clockwork.kernel:RestoreSchemaData("plugins/radiationzones/"..game.GetMap(), {});
 	table.sort(self.radiationZones, function(a, b) return tonumber(a.scale) > tonumber(b.scale) end);
-
-	if (#self.radiationZones > 0) then
-		local min = {}; local max = {}
-		for k, v in pairs(self.radiationZones) do
-			if (!min.x or v.minimum.x < min.x) then min.x = v.minimum.x end;
-			if (!min.y or v.minimum.y < min.y) then min.y = v.minimum.y end;
-			if (!min.z or v.minimum.z < min.z) then min.z = v.minimum.z end;
-			if (!max.x or v.maximum.x > max.x) then max.x = v.maximum.x end;
-			if (!max.y or v.maximum.y > max.y) then max.y = v.maximum.y end;
-			if (!max.z or v.maximum.z > max.z) then max.z = v.maximum.z end;
-		end;
-
-		self.radiationArea = {minimum = min, maximum = max};
-	end;
 end;
 
 -- A function to load the no-radiation zones

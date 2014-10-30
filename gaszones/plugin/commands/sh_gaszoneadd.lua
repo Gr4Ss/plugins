@@ -32,20 +32,6 @@ function COMMAND:OnRun(player, arguments)
 			maximum = Vector(math.max(first.x, second.x), math.max(first.y, second.y), math.max(first.z, second.z)),
 			scale = tonumber(arguments[1])
 		};
-
-		local gasArea = PLUGIN.gasArea;
-		if (gasArea) then
-			local min = PLUGIN.gasArea.minimum; local max = PLUGIN.gasArea.maximum;
-			if (!min.x or data.minimum.x < min.x) then min.x = data.minimum.x end;
-			if (!min.y or data.minimum.y < min.y) then min.y = data.minimum.y end;
-			if (!min.z or data.minimum.z < min.z) then min.z = data.minimum.z end;
-			if (!max.x or data.maximum.x > max.x) then max.x = data.maximum.x end;
-			if (!max.y or data.maximum.y > max.y) then max.y = data.maximum.y end;
-			if (!max.z or data.maximum.z > max.z) then max.z = data.maximum.z end;
-			PLUGIN.gasArea = {minimum = min, maximum = max};
-		else
-			PLUGIN.gasArea = {minimum = data.minimum, maximum = data.maximum};
-		end;
 		
 		PLUGIN.gasZones[#PLUGIN.gasZones + 1] = data;
 		PLUGIN:SaveGasZones();

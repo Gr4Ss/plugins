@@ -13,20 +13,6 @@ Clockwork.hint:Add("Gasmask", "A gasmask with a filter will keep the gass out.")
 function PLUGIN:LoadGasZones()
 	self.gasZones = Clockwork.kernel:RestoreSchemaData("plugins/gaszones/"..game.GetMap(), {});
 	table.sort(self.gasZones, function(a, b) return a.scale > b.scale end);
-
-	if (#self.gasZones > 0) then
-		local min = {}; local max = {}
-		for k, v in pairs(self.gasZones) do
-			if (!min.x or v.minimum.x < min.x) then min.x = v.minimum.x end;
-			if (!min.y or v.minimum.y < min.y) then min.y = v.minimum.y end;
-			if (!min.z or v.minimum.z < min.z) then min.z = v.minimum.z end;
-			if (!max.x or v.maximum.x > max.x) then max.x = v.maximum.x end;
-			if (!max.y or v.maximum.y > max.y) then max.y = v.maximum.y end;
-			if (!max.z or v.maximum.z > max.z) then max.z = v.maximum.z end;
-		end;
-
-		self.gasArea = {minimum = min, maximum = max};
-	end;
 end;
 
 -- A function to load the no-gas zones
