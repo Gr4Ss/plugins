@@ -14,7 +14,7 @@ function COMMAND:OnRun(player, arguments)
 	for k, v in pairs(PLUGIN.radiationZones) do
 		if (PLUGIN:IsInBox(pos, v.minimum, v.maximum)) then
 			Clockwork.player:Notify(player, "You removed a radiation zone with scale "..v.scale..".");
-			PLUGIN.radationZones[k] = nil;
+			PLUGIN.radiationZones[k] = nil;
 			PLUGIN:SaveRadiationZones();
 			return;
 		end;
