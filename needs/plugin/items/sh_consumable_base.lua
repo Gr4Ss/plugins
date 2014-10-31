@@ -33,7 +33,6 @@ function ITEM:OnUse(player, itemEntity)
 	
 	if (self("junk")) then
 		local item = Clockwork.item:CreateInstance(self("junk"))
-		item.model = self("model");
 		player:GiveItem(item, true);
 	end;
 end;
