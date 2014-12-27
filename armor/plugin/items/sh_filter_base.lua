@@ -15,8 +15,8 @@ ITEM.refillItem = "charcoal";
 
 ITEM:AddData("filterQuality", -1, true);
 
--- Called when a player wears the accessory.
-function ITEM:OnWearItem(player, bIsWearing)
+-- Called when the player equips the item.
+function ITEM:OnWearEquipableItem(player, bIsWearing)
 	if (!bIsWearing) then
 		self:SetData("filterQuality", math.Clamp(math.Round(player:GetCharacterData("filterQuality"), 5), 0, self("maxFilterQuality")));
 		player:SetCharacterData("filterQuality", -1);
@@ -27,6 +27,7 @@ function ITEM:OnWearItem(player, bIsWearing)
 	end;
 end;
 
+-- Called when the player tries to equip the item.
 function ITEM:CanPlayerWear(player, itemEntity)
 	local clothes = player:GetClothesItem();
 	if (clothes and clothes("hasGasmask") and !clothes("hasRebreather")) then

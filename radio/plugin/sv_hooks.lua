@@ -26,8 +26,17 @@ end);
 	Begin radio library Hooks
 ]]
 
+-- Called when a player's channel get set
+function PLUGIN:PlayerChannelSet(player, oldChannel, newChannel, channelNumber) end;
+
+-- Called when radio channels should be registered
+function PLUGIN:RegisterRadioChannels() end;
+
 -- Called when a radio channel has been initialized
 function PLUGIN:ClockworkRadioChannelInitialized(channel) end;
+
+-- Called when a player's channels should be adjusted
+function PLUGIN:PlayerAdjustChannels(player, listenChannels, globalChannels) end;
 
 -- Called to check if a radio message can be eavesdropped
 function PLUGIN:NoEavesdrop(player, channelID, sayType)

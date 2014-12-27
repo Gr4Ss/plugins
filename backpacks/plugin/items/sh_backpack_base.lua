@@ -15,8 +15,8 @@ ITEM.description = "A nice black backpack that can hold stuff.";
 ITEM:AddData("PerceivedWeight", -1, true);
 ITEM:AddData("AddInvSpace", 0, true);
 
--- Called when a player wears the accessory.
-function ITEM:OnWearItem(player, bIsWearing)
+-- Called when the player equips the item.
+function ITEM:OnWearEquipableItem(player, bIsWearing)
 	if (bIsWearing) then
 		-- Occupy slot on the player's backpack table
 		local backpackTable = player:GetCharacterData("backpackTable");
@@ -48,6 +48,7 @@ function ITEM:GetAddInvSpace()
 end;
 ITEM:AddQueryProxy("addInvSpace", ITEM.GetAddInvSpace);
 
+-- Called when the player tries to equip the item.
 function ITEM:CanPlayerWear(player, itemEntity)
 	local backpackTable = player:GetCharacterData("backpackTable");
 	if (!backpackTable or !backpackTable[self("slot")] or (backpackTable[self("slot")] + self("slotSpace") <= 10)) then

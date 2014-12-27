@@ -8,11 +8,19 @@ ITEM.description = "A base for equipable items.";
 
 ITEM:AddData("equipped", false, true);
 
--- Called when a player wears the accessory.
+-- Called when the player equips the item.
+-- Override this function if you need to add your own behaviour for when a player equips/unequips this item
+function ITEM:OnWearEquipableItem(player, bIsWearing) end;
+
+-- Called when the player tries to equip the item.
+-- Override this functions if you need to add your own behaviour for if a player can equip this item
+-- Returning false will keep a player from equipping it, returning true or nil will allow him to equip it
+function ITEM:CanPlayerWear(player, itemEntity) end;
+
+-- Called when a player equips the item.
 function ITEM:OnWearItem(player, bIsWearing)
-	if (bIsWearing) then
-	else
-	end;
+	self:SetData("equipped", bIsWearing);
+	self:OnWearEquipableItem(player, bIsWearing);
 end;
 
 function ITEM:HasPlayerEquipped(player, bIsValidWeapon)
@@ -23,7 +31,7 @@ end;
 function ITEM:OnUse(player, itemEntity)
 	if (player:Alive() and !player:IsRagdolled()) then
 		if (self:GetData("equipped") != true) then
-			if (!self.CanPlayerWear or self:CanPlayerWear(player, itemEntity) != false) then
+			if (self:CanPlayerWear(player, itemEntity) != false) then
 				self:SetData("equipped", true);
 				self:OnWearItem(player, true);
 				player:RebuildInventory();
@@ -40,28 +48,18 @@ function ITEM:OnUse(player, itemEntity)
 end;
 
 function ITEM:OnPlayerUnequipped(player, extraData)
-	self:SetData("equipped", false);
 	self:OnWearItem(player, false);
 	player:RebuildInventory();
 end;
 
-function ITEM:OnStorageTake(player, storageTable)
-	if (self:GetData("equipped") == true) then
-		self:SetData("equipped", false);
-		self:OnWearItem(player, false);
-	end;
-end;
-
 function ITEM:OnStorageGive(player, storageTable)
 	if (self:GetData("equipped") == true) then
-		self:SetData("equipped", false);
 		self:OnWearItem(player, false);
 	end;
 end;
 
 function ITEM:OnDrop(player, position)
 	if (self:GetData("equipped") == true) then
-		self:SetData("equipped", false);
 		self:OnWearItem(player, false);
 	end;
 end;

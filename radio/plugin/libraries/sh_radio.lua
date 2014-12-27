@@ -144,6 +144,8 @@ end;
 
 -- Called when channels should be initialized
 function Clockwork.radio:Initialize()
+	Clockwork.plugin:Call("RegisterRadioChannels");
+	
 	self.Initialized = true;
 	local channels = self:GetAll();
 
@@ -504,3 +506,5 @@ end;
 for k, v in pairs(file.Find(Clockwork.kernel:GetSchemaFolder().."/plugins/radio/plugin/channels/*.lua", "LUA", "namedesc")) do
 	Clockwork.kernel:IncludePrefixed(Clockwork.kernel:GetSchemaFolder().."/plugins/radio/plugin/channels/"..v);
 end;
+
+Clockwork.plugin:Add("Radio", Clockwork.radio);

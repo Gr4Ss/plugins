@@ -35,12 +35,12 @@ function COMMAND:OnRun(player, arguments)
 		
 		PLUGIN.gasZones[#PLUGIN.gasZones + 1] = data;
 		PLUGIN:SaveGasZones();
-		
-		Clockwork.player:Notify(player, "You have added a gas zone.");
-		
+
 		player.areaPointData = nil;
 
-		table.sort(PLUGIN.gasZones, function(a, b) return a.scale > b.scale end);
+		table.sort(PLUGIN.gasZones, function(a, b) return tonumber(a.scale) > tonumber(b.scale) end);
+		
+		Clockwork.player:Notify(player, "You have added a gas zone.");
 	end;
 end;
 

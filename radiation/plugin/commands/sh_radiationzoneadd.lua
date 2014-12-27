@@ -36,10 +36,11 @@ function COMMAND:OnRun(player, arguments)
 		PLUGIN.radiationZones[#PLUGIN.radiationZones + 1] = data;
 		PLUGIN:SaveRadiationZones();
 		
-		Clockwork.player:Notify(player, "You have added a radiation zone.");
-		
 		player.areaPointData = nil;
-		table.sort(PLUGIN.radiationZones, function(a, b) return a.scale > b.scale end);
+		
+		table.sort(PLUGIN.radiationZones, function(a, b) return tonumber(a.scale) > tonumber(b.scale) end);
+
+		Clockwork.player:Notify(player, "You have added a radiation zone.");
 	end;
 end;
 
