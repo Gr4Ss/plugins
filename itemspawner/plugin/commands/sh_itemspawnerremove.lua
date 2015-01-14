@@ -2,7 +2,7 @@
 local PLUGIN = PLUGIN;
 local Clockwork = Clockwork;
 
-local COMMAND = Clockwork.command:New("ItemSpawnRemove");
+local COMMAND = Clockwork.command:New("ItemSpawnerRemove");
 COMMAND.tip = "Remove an item spawn at your target position.";
 COMMAND.flags = CMD_DEFAULT;
 COMMAND.access = "s";
@@ -13,8 +13,9 @@ function COMMAND:OnRun(player, arguments)
 	local position = player:GetEyeTraceNoCursor().HitPos + Vector(0, 0, 32);
 	local itemSpawns = 0;
 	
+	local distSqr = math.pow(256, 2);
 	for k, v in pairs(PLUGIN.itemSpawns) do
-		if (v:Distance(position) <= 256) then
+		if (v:DistToSqr(position.pos) <= distSqr) then
 			itemSpawns = itemSpawns + 1;
 			
 			PLUGIN.itemSpawns[k] = nil;
@@ -31,6 +32,7 @@ function COMMAND:OnRun(player, arguments)
 		Clockwork.player:Notify(player, "There are no item spawns near this position.");
 	end;
 	
+	PLUGIN:UpdateItemSpawnESP();
 	PLUGIN:SaveItemSpawns();
 end;
 
