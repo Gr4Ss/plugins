@@ -16,9 +16,15 @@ ITEM.description = "A box full of yummies!";
 
 -- Called when a player uses the item.
 function ITEM:OnUse(player, itemEntity)
-	player:SetCharacterData("thirst", math.Clamp(player:GetCharacterData("thirst") - self("thirst"), 0, 100));
-	player:SetCharacterData("hunger", math.Clamp(player:GetCharacterData("hunger") - self("hunger"), 0, 100));
-	player:SetCharacterData("foodRads", player:GetCharacterData("foodRads") + self("rads"));
+	if (self("thirst") > 0) then
+		player:SetCharacterData("thirst", math.Clamp(player:GetCharacterData("thirst", 0) - self("thirst"), 0, 100));
+	end;
+	if (self("hunger") > 0) then
+		player:SetCharacterData("hunger", math.Clamp(player:GetCharacterData("hunger", 0) - self("hunger"), 0, 100));
+	end;
+	if (self("rads") > 0) then
+		player:SetCharacterData("foodRads", player:GetCharacterData("foodRads", 0) + self("rads"));
+	end;
 	
 	if (self("drunkTime") and self("drunkTime") > 0) then
 		local drunk = Clockwork.player:GetDrunk(player);
@@ -31,22 +37,17 @@ function ITEM:OnUse(player, itemEntity)
 		Clockwork.player:SetDrunk(player, drunk + self("drunkTime"));
 	end;
 	
-	if (self("junk")) then
+	if (self("junk") and type(self("junk")) == "string") then
 		local item = Clockwork.item:CreateInstance(self("junk"))
-		player:GiveItem(item, true);
+		if (item) then
+			player:GiveItem(item, true);
+		else
+			ErrorNoHalt("[Error] Consumable "..self("name").." attempted to give unexisting junk item "..self("junk")..".");
+		end;
 	end;
 end;
 
 -- Called when a player drops the item.
 function ITEM:OnDrop(player, position) end;
-
--- Called when the item's functions should be edited.
-function ITEM:OnEditFunctions(functions)
-	if (Clockwork.Client:GetFaction() == FACTION_CREATURE) then
-		for k, v in pairs(functions) do
-			if (v == self("useText")) then functions[k] = nil; end;
-		end;
-	end;
-end;
 
 ITEM:Register();
