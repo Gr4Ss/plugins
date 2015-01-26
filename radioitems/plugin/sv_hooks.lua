@@ -64,17 +64,17 @@ function PLUGIN:PostSaveData()
 end;
 
 -- Called when an entity's menu option should be handled.
-function PLUGIN:EntityHandleMenuOption(player, entity, option, arguments)
-	if (entity:GetClass() == "cw_itemradio") then
+function PLUGIN:EntityHandleMenuOption(player, radio, option, arguments)
+	if (radio:GetClass() == "cw_itemradio") then
 		if (option == "Set Frequency" and type(arguments) == "string") then
 			local channelTable = Clockwork.radio:FindByID(arguments);
 			if (channelTable) then
 				if (channelTable.stationaryCanAccess) then
-					entity:SetFrequency(channelTable.uniqueID);
+					radio:SetFrequency(channelTable.uniqueID);
 					
 					Clockwork.player:Notify(player, "You have set this stationary radio's channel to "..channelTable.name..".");
 				else
-					Clockwork.player:Notify(player, "You cannot tune in on this channel with a stationary radio!");
+					Clockwork.player:Notify(player, "This stationary radio cannot tune in on that channel!");
 				end;
 			elseif (string.find(arguments, "^%d%d%d%.%d$")) then
 				local first = string.match(arguments, "(%d)%d%d%.%d");
@@ -87,7 +87,7 @@ function PLUGIN:EntityHandleMenuOption(player, entity, option, arguments)
 					end;
 					Clockwork.datastream:Start(nil, "create_item_channel", {"freq "..arguments, freqID});
 
-					entity:SetFrequency(freqID);
+					radio:SetFrequency(freqID);
 						
 					Clockwork.player:Notify(player, "You have set this stationary radio's frequency to "..arguments..".");
 				else
@@ -97,14 +97,14 @@ function PLUGIN:EntityHandleMenuOption(player, entity, option, arguments)
 				Clockwork.player:Notify(player, "The radio frequency must look like xxx.x!");
 			end;
 		elseif (arguments == "cw_radioToggle") then
-			entity:Toggle();
+			radio:Toggle();
 		elseif (arguments == "cw_radioTake") then
 			local bSuccess, fault = player:GiveItem(Clockwork.item:CreateInstance("stat_radio"));
 			
 			if (!bSuccess) then
 				Clockwork.player:Notify(player, fault);
 			else
-				entity:Remove();
+				radio:Remove();
 			end;
 		end;
 	end;
@@ -114,10 +114,10 @@ function PLUGIN:ChatBoxMessageAdded(info)
 	local class = info.class
 	if (class == "ic" or class == "whisper" or class == "yell") then
 		local player = info.speaker
-		local entity = player:GetEyeTraceNoCursor().Entity;
+		local radio = player:GetEyeTraceNoCursor().Entity;
 
-		if (entity and entity:GetClass() == "cw_itemradio") then
-			if (!entity:IsOff()) then
+		if (radio and radio:GetClass() == "cw_itemradio") then
+			if (!radio:IsOff()) then
 				local range = Clockwork.config:Get("talk_radius"):Get();
 				local sayType = nil
 				if (class == "whisper") then
@@ -128,11 +128,11 @@ function PLUGIN:ChatBoxMessageAdded(info)
 					sayType = "yell"
 				end;
 
-				if (entity:GetPos():DistToSqr(player:GetShootPos()) <= math.pow(range, 2)) then
+				if (radio:GetPos():DistToSqr(player:GetShootPos()) <= math.pow(range, 2)) then
 					local data = {
 						range = range,
 						sayType = sayType,
-						channelID = entity:GetFrequency(),
+						channelID = radio:GetFrequency(),
 						stationaryRadio = true
 					};
 					Clockwork.radio:SayRadio(player, info.text, data, true);
@@ -147,8 +147,9 @@ end;
 function PLUGIN:PlayerCanHearRadioTransmit(player, info)
 	local range = math.pow(Clockwork.config:Get("talk_radius"):Get(), 2);
 	local radios = ents.FindByClass("cw_itemradio");
+	local channelID = info.data.channelID;
 	for k, radio in pairs(radios) do
-		if (radio:IsOff() or radio:GetFrequency() != info.data.channelID) then
+		if (radio:IsOff() or radio:GetFrequency() != channelID) then
 			continue;
 		else
 			if (player:GetPos():DistToSqr(radio:GetPos()) < range) then

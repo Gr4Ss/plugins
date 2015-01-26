@@ -17,7 +17,7 @@ function COMMAND:OnRun(player, arguments)
 	elseif (string.find(arguments[1], "STEAM_(%d+):(%d+):(%d+)")) then
 		steamID = arguments[1]
 	else
-		player:CPNotify(arguments[1].." is not a valid character or steamID!", Clockwork.option:GetKey("invalied_target_icon"));
+		player:CPNotify(arguments[1].." is not a valid character or steamID!", Clockwork.option:GetKey("invalid_target_icon"));
 	end;
 
 	local player_records_table = Clockwork.option:GetKey("cp_player_records_table");

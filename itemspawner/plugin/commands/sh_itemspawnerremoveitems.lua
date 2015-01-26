@@ -37,6 +37,11 @@ function COMMAND:OnRun(player, arguments)
 		end;
 	end;
 
+	if (decayedOnly) then
+		PLUGIN:Log("[FRC] "..player:Name().." ("..player:SteamName()..") has removed all decayed items.");
+	else
+		PLUGIN:Log("[FRC] "..player:Name().." ("..player:SteamName()..") has removed all spawned items.");
+	end;
 	PLUGIN:SaveSpawnedItems();
 	
 	Clockwork.player:Notify(player, "You have removed "..count.." spawned items.");

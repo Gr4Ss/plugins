@@ -12,11 +12,12 @@ COMMAND.arguments = 0;
 function COMMAND:OnRun(player, arguments)
 	local count = PLUGIN:GetSpawnedItemsCount();
 
+	PLUGIN:Log("[FRC] "..player:Name().." ("..player:SteamName()..") is forcing to item spawner to run.");
 	PLUGIN:RunSpawnItems();
 
-	local newCount = PLUGIN:GetSpawnedItemsCount();
+	local diff = PLUGIN:GetSpawnedItemsCount() - count;
 	
-	Clockwork.player:Notify(player, "Forcing the item spawner to run once. Spawned "..newCount - count.." items.");
+	Clockwork.player:Notify(player, "Forcing the item spawner to run once. Spawned "..diff.." items.");
 end;
 
 COMMAND:Register();

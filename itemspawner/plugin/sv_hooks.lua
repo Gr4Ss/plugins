@@ -8,11 +8,14 @@ function PLUGIN:ClockworkInitPostEntity()
 	self.itemsList, self.rareItemsList = self:GetSpawnList();
 end;
 
--- Called when Clockwork has loaded all of the entities.
-function cwSaveItems:ClockworkInitPostEntity()
-	self:LoadShipments(); self:LoadItems();
 
-	PLUGIN:LoadSpawnedItems();
+function PLUGIN:ClockworkInitialized()
+	local saveItemInit = cwSaveItems.ClockworkInitPostEntity;
+
+	function cwSaveItems:ClockworkInitPostEntity()
+		saveItemInit(self);
+		PLUGIN:LoadSpawnedItems();
+	end;
 end;
 
 -- Called just after data should be saved.
@@ -37,23 +40,22 @@ function PLUGIN:ClockworkConfigChanged(key, data, oldValue, newValue)
 end;
 
 -- Called each tick.
-function PLUGIN:Think()
+function PLUGIN:Tick()
 	local curTime = CurTime();
 	-- Check if interval is reached
-	if (!self.nextItemSpawn) then
-		local nextSpawn = PLUGIN:SetNextSpawnTime(curTime);
+	if (!self.nextItemSpawn or curTime >= self.nextItemSpawn) then
+		local nextSpawn = PLUGIN:GetNextSpawnTime();
 		self.nextItemSpawn = curTime + nextSpawn;
-		self:Log("[NXT] The item spawner will attempt to spawn items in "..math.floor(nextSpawn / 60).." minutes and "..math.ceil(nextSpawn % 60).." seconds.");
-	elseif (curTime >= self.nextItemSpawn) then
-		self.nextItemSpawn = nil;
 
 		self:RunSpawnItems();
+
+		self:Log("[NXT] The item spawner will attempt to spawn items in "..math.floor(nextSpawn / 60).." minutes and "..math.ceil(nextSpawn % 60).." seconds.");
 	end;
 end;
 
 function PLUGIN:PlayerPickupItem(player, itemTable, entity, bQuickUse)
 	if (self:IsSpawnedItem(itemTable("itemID"))) then
-		self:Log("[PUP] '"..itemTable("name").."' (ID: "..itemTable("itemID")..") has been picked up by "..player:Name()..".");
+		self:Log("[PUP] '"..itemTable("name").."' (ID: "..itemTable("itemID")..") has been picked up by "..player:Name().." ("..player:SteamName()..").");
 		self:UpdateSpawnedItems(itemTable("itemID"), nil, true);
 	end;
 end;

@@ -67,6 +67,10 @@ function ENT:SetOff(off)
 	self:SetDTBool(0, off);
 end;
 
+function ENT:SetDisableChannelTuning(bDisabled)
+	self:SetNetworkedBool("disabledTuning", bDisabled);
+end;
+
 -- A function to toggle whether the entity is off.
 function ENT:Toggle()
 	if (self:IsOff()) then

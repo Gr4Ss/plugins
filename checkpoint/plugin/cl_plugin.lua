@@ -17,6 +17,7 @@ cwConfig:AddToSystem("[CP] Allow Admin SENT", "allow_admin_sent", "Allow admins 
 cwConfig:AddToSystem("[CP] Allow Operator SWEP", "allow_operator_swep", "Allow operators to spawn SWEP's.", 0, 1, 0);
 cwConfig:AddToSystem("[CP] Allow Operator SENT", "allow_operator_sent", "Allow operators to spawn SENT's.", 0, 1, 0);
 cwConfig:AddToSystem("[CP] Global Echo", "global_echo", "Notifies everyone if a command is used.", 0, 1, 0);
+cwConfig:AddToSystem("[CP] Always Override Chat Icon", "always_override_chat_icon", "Always override chat icons  (including C16 icons).", 0, 1, 0);
 
 cwOption:SetColor("cp_color", Color(0, 114, 188, 255));
 
@@ -272,13 +273,26 @@ function PLUGIN:PlaySoundQueue(soundQueue, index)
 	end;
 end;
 
+local defaultIcons = {
+	["icon16/shield.png"] = true,
+	["icon16/star.png"] = true,
+	["icon16/emoticon_smile.png"] = true,
+	["icon16/add.png"] = true,
+	["icon16/user.png"] = true
+}
+
 -- Modify the chat icon
 function PLUGIN:ModifyIcon(info)
 	local player = info.speaker;
 	if (player) then
 		local icon = self:GetPlayerIcon(player);
+		print(Clockwork.config:Get("always_override_chat_icon"):Get(false))
+		if (Clockwork.config:Get("always_override_chat_icon"):Get(false) or
+			icon != cwOption:GetKey("default_chat_icon") or
+			(icon == cwOption:GetKey("default_chat_icon") and defaultIcons[info.icon])) then
 
-		info.icon = "icon16/"..icon..".png";
+			info.icon = "icon16/"..icon..".png";
+		end;
 	else
 	    if (info.name == "Console") then
 	    	info.icon = "icon16/monitor.png";

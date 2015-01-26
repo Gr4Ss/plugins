@@ -17,7 +17,7 @@ function COMMAND:OnRun(player, arguments)
 			player:CPNotify("Health: "..target:Health().."; Armor: "..target:Armor(), "information");
 		end;
 	else
-		player:CPNotify("You are not looking at a valid character!", Clockwork.option:GetKey("invalied_target_icon"));
+		player:CPNotify("You are not looking at a valid character!", Clockwork.option:GetKey("invalid_target_icon"));
 	end;
 end;
 

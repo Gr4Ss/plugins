@@ -6,10 +6,10 @@ Clockwork.flag:Add("f", "Food", "Access to food items on the business menu.");
 Clockwork.flag:Add("d", "Light Drinks", "Access to light drinks on the business menu.");
 Clockwork.flag:Add("D", "Heavy Drinks", "Access to heavy drinks on the business menu.");
 
-Clockwork.config:AddToSystem("Kill On Max Needs", "kill_on_max_needs", "Enable players being killed when reaching max hunger or thirst.");
-Clockwork.config:AddToSystem("Hunger Hours", "hunger_hours", "How many hours it takes for a player to gain 60 hunger.", 0, 24, 0);
-Clockwork.config:AddToSystem("Thirst Hours", "thirst_hours", "How many hours it takes for a player to gain 60 thirst.", 0, 24, 0);
-Clockwork.config:AddToSystem("Needs Tick Time", "needs_tick_time", "How many seconds between each time a player's needs are calculated.", 0, 300, 0);
+Clockwork.config:AddToSystem("[Needs] Kill On Max Needs", "kill_on_max_needs", "Enable players being killed when reaching max hunger or thirst.");
+Clockwork.config:AddToSystem("[Needs] Hunger Hours", "hunger_hours", "How many hours it takes for a player to gain 60 hunger.", 0, 24, 0);
+Clockwork.config:AddToSystem("[Needs] Thirst Hours", "thirst_hours", "How many hours it takes for a player to gain 60 thirst.", 0, 24, 0);
+Clockwork.config:AddToSystem("[Needs] Needs Tick Time", "needs_tick_time", "How many seconds between each time a player's needs are calculated.", 0, 300, 0);
 
 function PLUGIN:GetHungerText(hunger)
 	if (hunger <= 50) then

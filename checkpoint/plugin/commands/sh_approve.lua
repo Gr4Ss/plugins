@@ -36,7 +36,7 @@ function COMMAND:OnRun(player, arguments)
 				player:CPNotify(target:Name().." has already been approved.", cwOption:GetKey("cannot_do_icon"));
 			end;
 		else
-			player:CPNotify(arguments[1].." is not a valid character!", cwOption:GetKey("invalied_target_icon"));
+			player:CPNotify(arguments[1].." is not a valid character!", cwOption:GetKey("invalid_target_icon"));
 		end;
 	else
 		if (IsValid(PLUGIN.LastUnapprovedSpawn)) then

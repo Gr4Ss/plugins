@@ -12,7 +12,7 @@ Clockwork.kernel:IncludePrefixed("sv_hooks.lua");
 Clockwork.kernel:IncludePrefixed("sv_plugin.lua");
 
 -- CP version
-PLUGIN.CPVersion = "v1.1";
+PLUGIN.CPVersion = "v1.2.2";
 
 --[[
 	Chat icon options. Credit to Polis for giving me the chat icon idea.
@@ -38,6 +38,9 @@ cwOption:SetKey("death_note_flag", "N");
 
 -- Use single CP admin chat
 cwOption:SetKey("use_single_admin_chat", true);
+
+-- Share config key
+cwConfig:ShareKey("always_override_chat_icon");
 
 -- Get a player's icon
 function PLUGIN:GetPlayerIcon(player)

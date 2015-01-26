@@ -8,8 +8,8 @@ function PLUGIN:PlayerAdjustMotionBlurs(motionBlurs)
 		return;
 	end;
 
-	local hunger = Clockwork.Client:GetSharedVar("hunger");
-	local data = math.max(hunger - 90, 0);
+	local thirst = Clockwork.Client:GetSharedVar("thirst");
+	local data = math.max(thirst - 90, 0);
 	
 	if (data > 0) then
 		motionBlurs.blurTable["needs"] = (1 - (data * 0.25 / 10));

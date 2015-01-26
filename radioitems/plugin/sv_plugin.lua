@@ -17,6 +17,7 @@ function PLUGIN:LoadRadios()
 		
 		if (IsValid(entity)) then
 			entity:SetFrequency(v.frequency);
+			entity:SetDisableChannelTuning(v.tuningDisabled);
 			entity:SetOff(v.off);
 		end;
 		
@@ -49,7 +50,8 @@ function PLUGIN:SaveRadios()
 			moveable = moveable,
 			uniqueID = Clockwork.entity:QueryProperty(v, "uniqueID"),
 			position = v:GetPos(),
-			frequency = v:GetFrequency()
+			frequency = v:GetFrequency(),
+			tuningDisabled = v:IsChannelTuningDisabled()
 		};
 	end;
 	

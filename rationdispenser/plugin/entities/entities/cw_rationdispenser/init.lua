@@ -201,7 +201,7 @@ function ENT:Use(activator, caller)
 				else
 					self:SetFlashDuration(3);
 				end;
-			elseif ((!self.nextActivateRation or curTime >= self.nextActivateRation) and faction.canToggleRations) then
+			elseif ((!self.nextActivateRation or curTime >= self.nextActivateRation) and factionTable.canToggleRations) then
 				self:Toggle();
 			end;
 			

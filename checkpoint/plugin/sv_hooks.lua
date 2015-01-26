@@ -205,19 +205,6 @@ function PLUGIN:Think()
 		Clockwork.plugin:Call("PostCheckpoitnInit", self);
 		
 		print("[CP] Checkpoint "..self.CPVersion.." initialized.");
-		http.Fetch("https://dl.dropboxusercontent.com/u/18247506/Plugins/checkpoint_version.txt",
-			function(body, len, headers, code)
-				if (body != self.CPVersion) then
-					print("[CP] Your Checkpoint is out of date!");
-					print("[CP] Version "..body.." is now available at forums.cloudsixteen.com");
-				else
-					print("[CP] Checkpoint is up to date!");
-				end;
-			end,
-			function(error)
-				print("[CP] Couldn't get last Checkpoint version.");
-			end
-		);
 
 		init = true;
 	end;

@@ -20,3 +20,8 @@ end;
 function ENT:IsOff()
 	return self:GetDTBool(0);
 end;
+
+-- A function to get whether this radio's channel can be changed.
+function ENT:IsChannelTuningDisabled()
+	return self:GetNetworkedBool("disabledTuning");
+end;

@@ -16,6 +16,7 @@ cwConfig:Add("allow_operator_sent", false);
 cwConfig:Add("allow_operator_swep", false);
 cwConfig:Add("global_echo", false);
 cwConfig:Add("disable_player_punching", true);
+cwConfig:Add("always_override_chat_icon", false, true);
 
 -- Use Checkpoint's notifies
 cwOption:SetKey("use_cp_notify", true);

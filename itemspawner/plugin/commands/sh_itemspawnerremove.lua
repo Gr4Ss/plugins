@@ -14,8 +14,8 @@ function COMMAND:OnRun(player, arguments)
 	local itemSpawns = 0;
 	
 	local distSqr = math.pow(256, 2);
-	for k, v in pairs(PLUGIN.itemSpawns) do
-		if (v:DistToSqr(position.pos) <= distSqr) then
+	for k, spawn in pairs(PLUGIN.itemSpawns) do
+		if (spawn.pos:DistToSqr(position) <= distSqr) then
 			itemSpawns = itemSpawns + 1;
 			
 			PLUGIN.itemSpawns[k] = nil;

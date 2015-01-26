@@ -35,14 +35,14 @@ function COMMAND:OnRun(player, arguments)
 
 	local curTime = CurTime();
 	if (!PLUGIN.nextItemSpawn) then
-		PLUGIN:SetNextSpawnTime(curTime);
+		PLUGIN.nextItemSpawn = curTime + PLUGIN:GetNextSpawnTime();
 	end;
 
 	local timeToNextSpawn = PLUGIN.nextItemSpawn - curTime;
 	Clockwork.player:Notify(player, "The item spawner will attempt to spawn items in "..math.floor(timeToNextSpawn / 60).." minutes "..math.ceil(timeToNextSpawn % 60).." seconds.");
 
 	-- Spawn items if there are less than the maximum amount
-	if (count < currentTarget and playerCount > Clockwork.config:Get("itemspawner_min_players"):Get()) then
+	if (count < currentTarget and playerCount >= Clockwork.config:Get("itemspawner_min_players"):Get()) then
 		-- Calculate the amount we need to spawn
 		local itemsPerInterval = Clockwork.config:Get("itemspawner_items_per_interval"):Get();
 		local itemsPerIntervalVariation = Clockwork.config:Get("itemspawner_spawn_interval_variation"):Get();

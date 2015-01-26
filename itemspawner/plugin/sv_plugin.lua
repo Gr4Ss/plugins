@@ -25,19 +25,16 @@ PLUGIN.typeValues = {
 	["junk"] = 10
 };
 
+PLUGIN.spawnedItems = {};
+PLUGIN.itemSpawns = {};
+
 -- A function to load the item spawns.
 function PLUGIN:LoadItemSpawns()
 	self.itemSpawns = Clockwork.kernel:RestoreSchemaData("plugins/itemspawner/"..game.GetMap().."_spawns");
-	
-	
-	if (!self.itemSpawns) then
-		self.itemSpawns = {};
-	end;
 end;
 
 -- A function to load the spawned items.
 function PLUGIN:LoadSpawnedItems()
-	self.spawnedItems = {};
 	local spawnedItems = Clockwork.kernel:RestoreSchemaData("plugins/itemspawner/"..game.GetMap().."_items", false);
 
 	if (!spawnedItems) then
@@ -57,6 +54,7 @@ function PLUGIN:LoadSpawnedItems()
 			if (spawnedItems[itemID]) then
 				if (spawnedItems[itemID] < decayTime) then
 					self:Log("[DCY] "..itemTable("name").." (ID: "..itemTable("itemID")..") has decayed.");
+					spawnedItems[itemID] = nil;
 					item:Remove();
 					itemsDecayed = itemsDecayed + 1;
 				else
@@ -109,40 +107,45 @@ function PLUGIN:GetSpawnList()
 	-- Create empty tables
 	local itemsLists = {};
 	local rareItems = {};
+	rareItems.maxKey = 0;
 	-- Start making the tables with all items
-	for k, v in pairs(Clockwork.item:GetAll()) do
+	for k, itemTable in pairs(Clockwork.item:GetAll()) do
 		-- Grab value from the item
-		local spawnValue = v("spawnValue");
+		local spawnValue = itemTable("spawnValue");
 		if (spawnValue and spawnValue > 0) then
 			-- Grab isRare and type of the item
-			local rareItem = v("isRareSpawn");
-			local spawnType = v("spawnType");
+			local rareItem = itemTable("isRareSpawn");
+			local spawnType = itemTable("spawnType");
 			-- If the item is rare
 			if (rareItem) then
 				if (spawnValue > 1 or spawnValue < 0) then
-					ErrorNoHalt("[ItemSpawner] Item '"..v("name").."' is rare, ITEM.spawnValue should be between or equal to 0 and 1.\n");
+					ErrorNoHalt("[ItemSpawner] Item '"..itemTable("name").."' is rare, ITEM.spawnValue should be between or equal to 0 and 1.\n");
 				end;
 				if (spawnType) then
-					ErrorNoHalt("[ItemSpawner] Item '"..v("name").."' is rare, ITEM.spawnType will be ignored.\n");
+					ErrorNoHalt("[ItemSpawner] Item '"..itemTable("name").."' is rare, ITEM.spawnType will be ignored.\n");
 				end;
 
 				-- Get the latest key
-				local key = rareItems.maxKey or 0;
+				local key = rareItems.maxKey;
 				key = key + 1;
 				-- Add in item
-				rareItems[key] = tostring(v("index"));
+				rareItems[key] = tostring(itemTable("index"));
 				rareItems.maxKey = key;
 			-- Else if the item has a valid category
 			elseif (spawnType and self.typeValues[spawnType]) then
 				if (spawnValue < 1) then
-					ErrorNoHalt("[ItemSpawner] Item '"..v("name").."' is not rare, ITEM.spawnValue should be bigger than or equal to 1.\n")
+					ErrorNoHalt("[ItemSpawner] Item '"..itemTable("name").."' is not rare, ITEM.spawnValue should be bigger than or equal to 1.\n");
 				end;
 				-- Ensure spawnValue is at least 1
 				spawnValue = math.max(math.Round(spawnValue), 1);
-				-- Set up the table to the previous one or a new one if it doesn't exist yet
-				itemsLists[spawnType] = itemsLists[spawnType] or {};
+				-- Set up the table to a new one if it doesn't exist yet
+				if (!itemsLists[spawnType]) then
+					itemsLists[spawnType] = {};
+					itemsLists[spawnType].maxKey = 0;
+				end;
+
 				-- Get the latest key
-				local amount = itemsLists[spawnType].maxKey or 0;
+				local amount = itemsLists[spawnType].maxKey;
 				-- Set next position
 				local nxt = amount + spawnValue;
 				-- Fill the fields between the previous and current item
@@ -150,16 +153,16 @@ function PLUGIN:GetSpawnList()
 					itemsLists[spawnType][i] = nxt;
 				end;
 				-- Add in current item
-				itemsLists[spawnType][nxt] = tostring(v("index"));
+				itemsLists[spawnType][nxt] = tostring(itemTable("index"));
 				-- Set latest key
 				itemsLists[spawnType].maxKey = nxt;
 			else
 				if (self.typeValues[spawnType]) then
-					ErrorNoHalt("[ItemSpawner] Item '"..v("name").."' has a spawnValue set, but no spawnType (and is not rare).\n");
+					ErrorNoHalt("[ItemSpawner] Item '"..itemTable("name").."' has a spawnValue set, but no spawnType (and is not rare).\n");
 				elseif (spawnType) then
-					ErrorNoHalt("[ItemSpawner] Item '"..v("name").."' has an invalid type '"..spawnType.."'.\n");
+					ErrorNoHalt("[ItemSpawner] Item '"..itemTable("name").."' has an invalid type '"..spawnType.."'.\n");
 				else
-					ErrorNoHalt("[ItemSpawner] Item '"..v("name").."' has no spawnType set.\n");
+					ErrorNoHalt("[ItemSpawner] Item '"..itemTable("name").."' has no spawnType set.\n");
 				end;
 			end;
 		end;
@@ -167,6 +170,7 @@ function PLUGIN:GetSpawnList()
 
 	-- Setup table with the itemsLists
 	local items = {};
+	items.maxKey = 0;
 	for type, itemList in pairs(itemsLists) do
 		-- Grab value of the type
 		local value = self.typeValues[type];
@@ -179,7 +183,7 @@ function PLUGIN:GetSpawnList()
 				continue;
 			end;
 			-- Get the latest key
-			local amount = items.maxKey or 0;
+			local amount = items.maxKey;
 			-- Set next position
 			local nxt = amount + value;
 			-- Fill the fields between the previous and current item
@@ -196,8 +200,7 @@ function PLUGIN:GetSpawnList()
 end;
 
 -- Updates the next time the item spawner will attempt to spawn items.
-function PLUGIN:SetNextSpawnTime()
-	if (!curTime) then curTime = CurTime(); end;
+function PLUGIN:GetNextSpawnTime()
 	-- Get spawn interval
 	local spawnInterval = Clockwork.config:Get("itemspawner_spawn_interval"):Get();
 	-- Get spawn interval variation
@@ -215,7 +218,7 @@ function PLUGIN:GetRandomItemSpawn(itemSpawns, players)
 
 	local radiusX = position.radiusX;
 	local radiusY = position.radiusY;
-	local distSqr = math.pow(math.max(radiusX, radiusY) * 2, 2);
+	local distSqr = math.pow(position.noSpawnRadius, 2);
 	-- If a player is too close to the item spawn, it will select a different item spawn.
 	for k, player in pairs(players) do
 		if (player:HasInitialized() and player:Alive() and player:GetPos():DistToSqr(position.pos) <= distSqr and !player:IsNoClipping()) then
@@ -224,7 +227,7 @@ function PLUGIN:GetRandomItemSpawn(itemSpawns, players)
 	end;
 
 	-- Return position plus a random offset
-	return (position.pos + Vector(radiusX - 2 * math.random(radiusX), radiusY - 2 * math.random(radiusY), 0));
+	return (position.pos + Vector(radiusX * (1 - 2 * math.random()), radiusY * (1 - 2 * math.random()), 0));
 end;
 
 -- A function to get a random item.
@@ -257,6 +260,15 @@ end;
 -- A function to spawn a certain amount of items.
 function PLUGIN:SpawnItems(amount)
 	if (amount < 1) then
+		ErrorNoHalt("[ItemSpawner] Attempting to make less than 1 attempt to spawn items.");
+		self:Log("[ERR] Attempting to make less than 1 attempt to spawn items.");
+		return;
+	end;
+
+	-- Check if our itemsList has anything on it
+	if (self.itemsList.maxKey == 0) then
+		ErrorNoHalt("[ItemSpawner] No items are correctly defined as spawnable.");
+		self:Log("[ERR] No items are correctly defined as spawnable.");
 		return;
 	end;
 	
@@ -276,6 +288,7 @@ function PLUGIN:SpawnItems(amount)
 		-- Get random item
 		local randomItem;
 		local tag = "ITEM";
+		local spawnType;
 		-- Check if we need to get an item from the rare item list
 		if (math.random() > rareSpawnChance) then
 			randomItem = self:GetRandomItem(self.itemsList);
@@ -293,6 +306,7 @@ function PLUGIN:SpawnItems(amount)
 						randomItem = self:GetRandomItem(self.itemsList);
 					else
 						tag = "RARE";
+						spawnType = "rare";
 						self:Log("[RARE-SUCC] Rare item roll for '"..itemTable("name").."' successful!")
 					end;
 				end;
@@ -301,6 +315,9 @@ function PLUGIN:SpawnItems(amount)
 		-- Check if we got an item and make an instance if we did, else continue
 		if (randomItem) then
 			randomItem = Clockwork.item:CreateInstance(tonumber(randomItem));
+			if (!randomItem("isRareSpawn")) then
+				spawnType = randomItem("spawnType");
+			end;
 		else
 			self:Log("[FLR] No valid random item selected!");
 			continue;
@@ -310,7 +327,7 @@ function PLUGIN:SpawnItems(amount)
 		local entity = Clockwork.entity:CreateItem(nil, randomItem, randomPos);
 		-- If we spawned an item, add the os.time onto a data field
 		if (entity) then
-			self:Log("["..tag.."-SPWN] '"..randomItem("name").."' (ID: "..randomItem("itemID")..") successfully selected and spawned.");
+			self:Log("["..tag.."-SPWN] '"..randomItem("name").."' (ID: "..randomItem("itemID")..", type: "..spawnType..") successfully selected and spawned.");
 			self:UpdateSpawnedItems(randomItem("itemID"), os.time());
 		end;
 	end;
@@ -321,22 +338,23 @@ end;
 
 -- A function to run the item spawner once
 function PLUGIN:RunSpawnItems()
-	self:Log("[SPW] Attempting to spawn items...")
+	self:Log("[SPW] Attempting to spawn items...");
 
 	-- Check if our itemsList has anything on it
 	if (self.itemsList.maxKey == 0) then
-		self:Log("[ERR] No items are correctly defined as spawnable.")
+		ErrorNoHalt("[ItemSpawner] No items are correctly defined as spawnable.");
+		self:Log("[ERR] No items are correctly defined as spawnable.");
 		return;
 	end;
 	
 	-- Get the player count
 	local players = player.GetAll();
+	local playerCount = 0;
 	for k, v in pairs(players) do
-		if (!v:HasInitialized()) then
-			players[k] = nil;
+		if (v:HasInitialized()) then
+			playerCount = playerCount + 1;
 		end;
 	end;
-	local playerCount = table.Count(players);
 	-- Check if we have enough players
 	if (playerCount < Clockwork.config:Get("itemspawner_min_players"):Get()) then
 		self:Log("[SPW] Only "..playerCount.." players online, minimum is "..Clockwork.config:Get("itemspawner_min_players"):Get()..". Aborting spawning.");
@@ -392,7 +410,8 @@ function PLUGIN:Log(text)
 	
 	if (dateInfo) then
 		if (dateInfo.month < 10) then dateInfo.month = "0"..dateInfo.month; end;
-		local fileName = dateInfo.year.."-"..dateInfo.month;
+		if (dateInfo.day < 10) then dateInfo.day = "0"..dateInfo.day; end;
+		local fileName = dateInfo.year.."-"..dateInfo.month.."-"..dateInfo.day;
 		
 		if (dateInfo.hour < 10) then dateInfo.hour = "0"..dateInfo.hour; end;
 		if (dateInfo.min < 10) then dateInfo.min = "0"..dateInfo.min; end;
@@ -400,6 +419,6 @@ function PLUGIN:Log(text)
 		local time = dateInfo.hour..":"..dateInfo.min..":"..dateInfo.sec;
 		local logText = time..": "..string.gsub(text, "\n", "");
 
-		Clockwork.file:Append("logs/itemspawner/"..fileName..".log", logText.."\n");
+		Clockwork.file:Append("logs/itemspawner/"..game.GetMap().."/"..fileName..".log", logText.."\n");
 	end;
 end;

@@ -1,13 +1,13 @@
-local ITEM = Clockwork.item:New();
+local ITEM = Clockwork.item:New(nil, true);
 
 ITEM.name = "Stationary Radio";
-ITEM.uniqueID = "stat_radio";
-ITEM.value = 0.75;
-ITEM.cost = 30;
+ITEM.uniqueID = "stationary_radio_base";
 ITEM.model = "models/props_lab/citizenradio.mdl";
 ITEM.weight = 5;
 ITEM.category = "Communication";
 ITEM.business = false;
+ITEM.tuningDisabled = false;
+ITEM.frequencyID = "freq_0000";
 ITEM.description = "An antique radio, do you think this'll still work?";
 
 -- Called when a player uses the item.
@@ -15,24 +15,32 @@ function ITEM:OnUse(player, itemEntity)
 	local trace = player:GetEyeTraceNoCursor();
 	
 	if (trace.HitPos:Distance( player:GetShootPos() ) <= 192) then
-		local entity = ents.Create("cw_itemradio");
+		local radio = ents.Create("cw_itemradio");
 		
-		Clockwork.player:GiveProperty(player, entity);
+		Clockwork.player:GiveProperty(player, radio);
 		
-		entity:SetItemTable(self);
-		entity:SetModel(self.model);
-		entity:SetPos(trace.HitPos);
-		entity:Spawn();
+		radio:SetItemTable(self);
+		radio:SetModel(self.model);
+		radio:SetPos(trace.HitPos);
+		radio:Spawn();
+
+		if (self("frequencyID")) then
+			radio:SetFrequency(self("frequencyID"));
+		end;
+
+		if (self("tuningDisabled")) then
+			radio:SetDisableChannelTuning(true);
+		end;
 		
 		if (IsValid(itemEntity)) then
 			local physicsObject = itemEntity:GetPhysicsObject();
 			
-			entity:SetPos( itemEntity:GetPos() );
-			entity:SetAngles( itemEntity:GetAngles() );
+			radio:SetPos( itemEntity:GetPos() );
+			radio:SetAngles( itemEntity:GetAngles() );
 			
 			if (IsValid(physicsObject)) then
 				if (!physicsObject:IsMoveable()) then
-					physicsObject = entity:GetPhysicsObject();
+					physicsObject = radio:GetPhysicsObject();
 					
 					if (IsValid(physicsObject)) then
 						physicsObject:EnableMotion(false);
@@ -40,7 +48,7 @@ function ITEM:OnUse(player, itemEntity)
 				end;
 			end;
 		else
-			Clockwork.entity:MakeFlushToGround(entity, trace.HitPos, trace.HitNormal);
+			Clockwork.entity:MakeFlushToGround(radio, trace.HitPos, trace.HitNormal);
 		end;
 	else
 		Clockwork.player:Notify(player, "You cannot drop a radio that far away!");

@@ -13,7 +13,7 @@ COMMAND.optionalArguments = 1;
 -- Called when the command has been run.
 function COMMAND:OnRun(player, arguments)
 	local amount = arguments[1];
-	if (!tonumber(amount)) then
+	if (!amount or !tonumber(amount)) then
 		amount = 1;
 	else
 		amount = math.max(math.Round(tonumber(amount)), 1);
@@ -21,11 +21,12 @@ function COMMAND:OnRun(player, arguments)
 
 	local count = PLUGIN:GetSpawnedItemsCount();
 
+	PLUGIN:Log("[FRC] "..player:Name().." ("..player:SteamName()..") is attempting to spawn items "..amount.." times.");
 	PLUGIN:SpawnItems(amount);
 
-	local newCount = PLUGIN:GetSpawnedItemsCount();
+	local diff = PLUGIN:GetSpawnedItemsCount() - count;
 
-	Clockwork.player:Notify(player, "Attempted to spawn items "..amount.." times. Spawned "..newCount - count.." items.");
+	Clockwork.player:Notify(player, "Attempted to spawn items "..amount.." times. Spawned "..diff.." items.");
 end;
 
 COMMAND:Register();
